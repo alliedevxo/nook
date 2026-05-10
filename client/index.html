@@ -1,7 +1,24 @@
-<html>
-  <head> </head>
-
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Nook</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 480px;
+        margin: 4rem auto;
+        padding: 0 1rem;
+      }
+      input, button { font-size: 1rem; padding: 0.4rem 0.6rem; }
+      #result { margin-top: 1rem; font-weight: 600; }
+    </style>
+  </head>
   <body>
-    Hello World!
+    <h1>Nook</h1>
+    <input id="name" placeholder="Your name" />
+    <button id="go">Greet</button>
+    <p id="result"></p>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

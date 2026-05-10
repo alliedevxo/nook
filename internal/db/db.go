@@ -3,12 +3,10 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	filesystem "nook/internal"
+	"nook/internal/filesystem"
 
 	_ "github.com/mattn/go-sqlite3"
 )
-
-
 
 func Open() (*sql.DB, error) {
 	path, err := filesystem.GetUserConfigDir()
