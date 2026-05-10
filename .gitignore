@@ -27,6 +27,11 @@ go.work.sum
 # env file
 .env
 
+# build dirs
+build/*
+client/dist/*
+
+
 # Editor/IDE
 # .idea/
 # .vscode/
