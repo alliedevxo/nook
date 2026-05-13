@@ -3,3 +3,13 @@
 import {db} from '../models';
 
 export function GetNotebooks():Promise<Array<db.Notebook>>;
+
+export function GetNotes(arg1:number):Promise<Array<db.Note>>;
+
+export function InsertNote(arg1:number,arg2:string,arg3:string):Promise<void>;
+
+export function InsertNotebook(arg1:string):Promise<void>;
+
+export function MoveNote(arg1:number,arg2:number):Promise<void>;
+
+export function UpdateNote(arg1:number,arg2:string,arg3:string):Promise<void>;

@@ -5,3 +5,23 @@
 export function GetNotebooks() {
   return window['go']['app']['App']['GetNotebooks']();
 }
+
+export function GetNotes(arg1) {
+  return window['go']['app']['App']['GetNotes'](arg1);
+}
+
+export function InsertNote(arg1, arg2, arg3) {
+  return window['go']['app']['App']['InsertNote'](arg1, arg2, arg3);
+}
+
+export function InsertNotebook(arg1) {
+  return window['go']['app']['App']['InsertNotebook'](arg1);
+}
+
+export function MoveNote(arg1, arg2) {
+  return window['go']['app']['App']['MoveNote'](arg1, arg2);
+}
+
+export function UpdateNote(arg1, arg2, arg3) {
+  return window['go']['app']['App']['UpdateNote'](arg1, arg2, arg3);
+}
