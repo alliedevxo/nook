@@ -17,7 +17,7 @@ func (store *Store) InitializeTables() error {
 		id INTEGER PRIMARY KEY,
 		notebook_id INTEGER NOT NULL,
 		title TEXT NOT NULL,
-		body TEXT,
+		content TEXT,
 		FOREIGN KEY (notebook_id) REFERENCES notebooks(id) ON DELETE CASCADE
 	);
 	`

@@ -1,5 +1,10 @@
 package db
 
+type Notebook struct {
+	ID    int64  `json:"id"`
+	Title string `json:"title"`
+}
+
 func (store *Store) InsertNotebook(title string) error {
 	const insertNotebookSql = `
 	INSERT INTO notebooks (title)
@@ -11,11 +16,6 @@ func (store *Store) InsertNotebook(title string) error {
 	}
 
 	return nil
-}
-
-type Notebook struct {
-	ID    int64  `json:"id"`
-	Title string `json:"title"`
 }
 
 func (store *Store) GetNotebooks() ([]Notebook, error) {
