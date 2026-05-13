@@ -31,6 +31,9 @@ go.work.sum
 build/*
 client/dist/*
 
+# js
+client/node_modules/*
+
 
 # Editor/IDE
 # .idea/
