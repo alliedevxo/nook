@@ -8,7 +8,11 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func Open() (*sql.DB, error) {
+type Store struct {
+	db *sql.DB
+}
+
+func Open() (*Store, error) {
 	path, err := filesystem.GetUserConfigDir()
 	if err != nil {
 		return nil, err
@@ -16,154 +20,32 @@ func Open() (*sql.DB, error) {
 
 	dsn := path + "?_foreign_keys=on"
 
-	db, err := sql.Open("sqlite3", dsn)
+	sqlDB, err := sql.Open("sqlite3", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("open database: %w", err)
 	}
 
-	db.SetMaxOpenConns(1)
+	sqlDB.SetMaxOpenConns(1)
 
-	if err := db.Ping(); err != nil {
+	if err := sqlDB.Ping(); err != nil {
 		return nil, fmt.Errorf("ping database: %w", err)
 	}
 
-	if err := initializeTables(db); err != nil {
+	store := &Store{db: sqlDB}
+
+	if err := store.InitializeTables(); err != nil {
 		return nil, err
 	}
 
-	return db, nil
+	return store, nil
 }
 
-func initializeTables(db *sql.DB) error {
-	const createNotebookSql = `
-	CREATE TABLE IF NOT EXISTS notebooks(
-		id INTEGER PRIMARY KEY,
-		title TEXT NOT NULL
-	);
-	`
-	
-	const createNotesSql = `
-	CREATE TABLE IF NOT EXISTS notes(
-		id INTEGER PRIMARY KEY,
-		notebook_id INTEGER NOT NULL,
-		title TEXT NOT NULL,
-		body TEXT,
-		FOREIGN KEY (notebook_id) REFERENCES notebooks(id) ON DELETE CASCADE
-	);
-	`
-	
-	tx, err := db.Begin()
-
-	if err != nil {
-		dbErr := fmt.Errorf("start transaction: %w", err)
-		return dbErr
-	}
-	defer tx.Rollback()
-
-	if _, err := tx.Exec(createNotebookSql); err != nil {
-		dbErr := fmt.Errorf("create notebooks table: %w", err)
-		return dbErr
-	}
-
-	if _, err := tx.Exec(createNotesSql); err != nil {
-		dbErr := fmt.Errorf("create notes table: %w", err)
-		return dbErr
-	}
-
-	return tx.Commit()
+func (s *Store) Close() error {
+	return s.db.Close()
 }
 
-func InsertNotebook(db *sql.DB, title string) error {
-	const viewNotebookTableSql = `
-	INSERT INTO notebooks (title)
-	VALUES (?)
-	`
 
-	if _, err := db.Exec(viewNotebookTableSql, title); err != nil {
-		return err
-	}
 
-	return nil
-}
 
-type Notebook struct {
-	ID int64 `json:"id"`
-	Title string
-}
-
-func GetNotebooks(db *sql.DB) ([]Notebook, error) {
-	const viewNotebookTableSql = `
-	SELECT * FROM notebooks;
-	`
-
-	rows, err := db.Query(viewNotebookTableSql)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var out []Notebook
-
-	for rows.Next() {
-		var id int64
-		var title string
-		if err := rows.Scan(&id, &title); err != nil {
-			return nil, err
-		}
-		
-		out = append(out, Notebook{ ID: id, Title: title })
-
-		fmt.Printf("Id: %d; Title: %s\n", id, title)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	fmt.Printf("printing notebooks: %v", out)
-	
-	return out, nil
-}
-
-func InsertNote(db *sql.DB, notebook_id int64, title, body string) error {
-	const viewNotebookTableSql = `
-	INSERT INTO notes (notebook_id, title, body)
-	VALUES (?, ?, ?)
-	`
-
-	if _, err := db.Exec(viewNotebookTableSql, notebook_id, title, body); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func ViewNotes(db *sql.DB) error {
-	const viewNotesTableSql = `
-	SELECT * FROM notes;
-	`
-
-	rows, err := db.Query(viewNotesTableSql)
-	if err != nil {
-		return err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var id int64
-		var notebook_id int64
-		var title string
-		var body string
-		if err := rows.Scan(&id, &notebook_id, &title, &body); err != nil {
-			return err
-		}
-
-		fmt.Printf("Id: %d; Notebook Id: %d; Title: %s; Body: %s\n", id, notebook_id, title, body)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	
-	return nil
-}
 
 

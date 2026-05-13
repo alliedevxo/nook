@@ -8,24 +8,10 @@ import "@mantine/core/styles.css";
 export function Notebooks() {
   const [notebooks, setNotebooks] = useState<db.Notebook[]>([]);
 
-  function transformNotebooks(notebooks: db.Notebook[]) {
-    return notebooks.map((notebook) => (
-      <Accordion.Item
-        key={notebook.id}
-        value={notebook.id + " " + notebook.Title}
-      >
-        <Accordion.Control>
-          <AccordionLabel {...notebook} />
-        </Accordion.Control>
-        <Accordion.Panel>List notes here</Accordion.Panel>
-      </Accordion.Item>
-    ));
-  }
-
   useEffect(() => {
     async function load() {
-        const data = await GetNotebooks();
-        setNotebooks(data);
+      const data = await GetNotebooks();
+      setNotebooks(data);
     }
 
     void load();
@@ -33,11 +19,21 @@ export function Notebooks() {
 
   return (
     <Accordion chevronPosition="right">
-      {transformNotebooks(notebooks)}
+      {notebooks.map((notebook) => (
+        <Accordion.Item
+          key={notebook.id}
+          value={notebook.id + " " + notebook.title}
+        >
+          <Accordion.Control>
+            <AccordionLabel {...notebook} />
+          </Accordion.Control>
+          <Accordion.Panel>List notes here</Accordion.Panel>
+        </Accordion.Item>
+      ))}
     </Accordion>
   );
 }
 
-function AccordionLabel({ Title }: db.Notebook) {
-  return <Text span>{Title}</Text>;
+function AccordionLabel({ title }: db.Notebook) {
+  return <Text span>{title}</Text>;
 }

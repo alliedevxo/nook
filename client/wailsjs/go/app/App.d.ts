@@ -3,5 +3,3 @@
 import {db} from '../models';
 
 export function GetNotebooks():Promise<Array<db.Notebook>>;
-
-export function Greet(arg1:string):Promise<string>;

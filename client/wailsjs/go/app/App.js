@@ -5,7 +5,3 @@
 export function GetNotebooks() {
   return window['go']['app']['App']['GetNotebooks']();
 }
-
-export function Greet(arg1) {
-  return window['go']['app']['App']['Greet'](arg1);
-}

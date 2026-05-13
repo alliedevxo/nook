@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"log"
 	nookapp "nook/internal/app"
 	nookdb "nook/internal/db"
@@ -15,16 +16,22 @@ import (
 var assets embed.FS
 
 func main() {
-	db, err := nookdb.Open()
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
+	store, err := nookdb.Open()
 
 	if err != nil {
-		log.Fatalf("open notebook db: %v", err)
+		return fmt.Errorf("open notebook db: %w", err)
 	}
-	defer db.Close()
+	defer store.Close()
 
-	app := nookapp.New(db)
+	app := nookapp.New(store)
 
-	err = wails.Run(&options.App{
+	return wails.Run(&options.App{
 		Title: "Nook",
 		Width: 1024,
 		Height: 768,
@@ -36,7 +43,4 @@ func main() {
 			app,
 		},
 	})
-	if err != nil {
-		log.Fatalf("wails run: %v", err)
-	}
 }
