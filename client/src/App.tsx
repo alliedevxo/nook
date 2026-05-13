@@ -1,10 +1,17 @@
-import { Stack } from "@mantine/core";
+import { Box, Flex, Paper } from "@mantine/core";
 import { Notebooks } from "./Notebooks";
 
 export function App() {
   return (
-    <Stack maw={480} mx="auto" mt="xl" px="md" gap="md">
-      <Notebooks />
-    </Stack>
+    <Flex h="100vh" gap="md">
+      <Paper w={320} withBorder bdrs={0} style={{ overflowY: "auto" }}>
+        <Notebooks />
+      </Paper>
+      <Box flex={1}>
+        <Paper h="100%" p="md" style={{ overflowY: "auto" }}>
+          Future content here
+        </Paper>
+      </Box>
+    </Flex>
   );
 }

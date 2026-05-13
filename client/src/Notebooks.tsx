@@ -1,16 +1,19 @@
-import { Accordion, Text, Flex } from "@mantine/core";
+import { Accordion, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { GetNotebooks } from "../wailsjs/go/app/App";
 import { db } from "../wailsjs/go/models";
 
+import "@mantine/core/styles.css";
+
 export function Notebooks() {
   const [notebooks, setNotebooks] = useState<db.Notebook[]>([]);
-  const [_loading, setLoading] = useState(false);
-  const [_errors, setErrors] = useState(false);
 
   function transformNotebooks(notebooks: db.Notebook[]) {
     return notebooks.map((notebook) => (
-      <Accordion.Item key={notebook.id} value={notebook.Title}>
+      <Accordion.Item
+        key={notebook.id}
+        value={notebook.id + " " + notebook.Title}
+      >
         <Accordion.Control>
           <AccordionLabel {...notebook} />
         </Accordion.Control>
@@ -19,36 +22,22 @@ export function Notebooks() {
     ));
   }
 
-  function AccordionLabel({ Title }: db.Notebook) {
-    return (
-      <Flex component="span" gap="md" align="center" wrap="nowrap">
-        <div>
-          <Text span>{Title}</Text>
-        </div>
-      </Flex>
-    );
-  }
-
   useEffect(() => {
     async function load() {
-      try {
-        setLoading(true);
         const data = await GetNotebooks();
-        console.log("data", data);
         setNotebooks(data);
-      } catch (e) {
-        setErrors(true);
-      } finally {
-        setLoading(false);
-      }
     }
 
     void load();
   }, []);
 
   return (
-    <Accordion chevronPosition="right" variant="contained">
+    <Accordion chevronPosition="right">
       {transformNotebooks(notebooks)}
     </Accordion>
   );
+}
+
+function AccordionLabel({ Title }: db.Notebook) {
+  return <Text span>{Title}</Text>;
 }
