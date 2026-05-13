@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
+	"nook/internal/db"
 )
 
 type App struct {
@@ -21,4 +23,18 @@ func (a *App) Startup(ctx context.Context) {
 
 func (a *App) Greet(name string) string {
 	return fmt.Sprintf("Hello from nook, %s!", name)
+}
+
+func (a *App) GetNotebooks() ( []db.Notebook, error) {
+	database, err := db.Open()
+	if err != nil {
+		return nil, err
+	}
+	
+	notebooks, err := db.GetNotebooks(database)
+	if err != nil {
+		return nil, err
+	}
+
+	return notebooks, nil
 }

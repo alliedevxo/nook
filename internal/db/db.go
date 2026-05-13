@@ -86,31 +86,42 @@ func InsertNotebook(db *sql.DB, title string) error {
 	return nil
 }
 
-func ViewNotebooks(db *sql.DB) error {
+type Notebook struct {
+	ID int64 `json:"id"`
+	Title string
+}
+
+func GetNotebooks(db *sql.DB) ([]Notebook, error) {
 	const viewNotebookTableSql = `
 	SELECT * FROM notebooks;
 	`
 
 	rows, err := db.Query(viewNotebookTableSql)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer rows.Close()
+
+	var out []Notebook
 
 	for rows.Next() {
 		var id int64
 		var title string
 		if err := rows.Scan(&id, &title); err != nil {
-			return err
+			return nil, err
 		}
+		
+		out = append(out, Notebook{ ID: id, Title: title })
 
 		fmt.Printf("Id: %d; Title: %s\n", id, title)
 	}
 	if err := rows.Err(); err != nil {
-		return err
+		return nil, err
 	}
+
+	fmt.Printf("printing notebooks: %v", out)
 	
-	return nil
+	return out, nil
 }
 
 func InsertNote(db *sql.DB, notebook_id int64, title, body string) error {
